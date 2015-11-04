@@ -2,37 +2,48 @@ import serial
 import time
 
 ser = serial.Serial('/dev/ttyACM0', 115200)
-tab = [-1, -1, -1, -1, -1, -1, -1, -1] 
+wires = [-1 for i in range(8)]
 file = open("data.vcd", "w")
-file.write("$timescale 1ps $end\n")
-file.write("$var wire 1 A Digital0 $end\n")
-file.write("$var wire 1 B Digital1 $end\n")
-file.write("$var wire 1 C Digital2 $end\n")
-file.write("$var wire 1 D Digital3 $end\n")
-file.write("$var wire 1 E Digital4 $end\n")
-file.write("$var wire 1 F Digital5 $end\n")
-file.write("$var wire 1 G Digital6 $end\n")
-file.write("$var wire 1 H Digital7 $end\n")
 
-t = time.time()
-value = -1
+def wireName(wireId):
+    return chr(ord("A") + wireId)
+
+file.write("$timescale 1ns $end\n")
+
+for wireId in range(len(wires)):
+    file.write("$var wire 1 %c Digital%d $end\n" % (wireName(wireId), wireId))
+
+startTime = time.time()
+allWires = -1
 
 while True:
+    
+    # Read the value of all ports as one integer from the serial port
+    allWiresOld = allWires
+    allWires = ser.readline().strip()
+    if len(allWires) == 0:
+        continue
     try:
-        oldvalue = value
-        value = ser.readline().strip()
-        if value != '':
-            value = int(value)
-            if oldvalue != value:
-                file.write("#%d\n"% (1000*(time.time() - t)))
-                for i in range(8):
-                    tmp = (value & 1<<i)>>i
-                    if tab[i] != tmp:
-                        tab[i] = tmp
-                        file.write("%d%s\n" % (tab[i], chr(ord("A") + i)))
+        allWires = int(allWires)
+        # Skip this value if all wires are identical
+        if allWires == allWiresOld:
+            continue
     except ValueError:
-        pass
-    except KeyboardInterrupt:
-        file.write("#%d\n"% (1000*(time.time() - t)))
-        raise
-
+        continue
+    
+    # Write the header for the new values
+    # TODO Replace delta with value given by the board
+    delta = 1000000 * (time.time() - startTime)
+    file.write("#%d\n" % (delta))
+    
+    # Write the value of each wire
+    for wireId in range(len(wires)):
+        # Extract one wire's state
+        wire = (allWires & 1 << wireId) >> wireId
+        # Skip unchanged wires
+        if wire == wires[wireId]:
+            continue
+        # Save the new value
+        wires[wireId] = wire
+        # Write it out
+        file.write("%d%s\n" % (wires[wireId], wireName(wireId)))
