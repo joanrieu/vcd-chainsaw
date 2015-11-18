@@ -1,7 +1,8 @@
+
 import serial
 import time
 
-ser = serial.Serial('/dev/ttyACM0', 115200)
+ser = serial.Serial('/dev/ttyACM0', 2000000)
 wires = [-1 for i in range(8)]
 file = open("data.vcd", "w")
 

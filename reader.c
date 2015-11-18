@@ -31,19 +31,19 @@ void USART_Transmit( unsigned char data ) {
     UDR0 = data;
 }
 
-unsigned char USART_Receive( void ) {
+/*unsigned char USART_Receive( void ) {
     //Wait for data to be received
     while ( !(UCSR0A & (1<<RXC0)) );
 
     //Get and return received data from buffer
     return UDR0;
-}
-int charToInt(char* text) {
+}*/
+/*int charToInt(char* text) {
     return atoi(text);
 }
 void intToChar(int ent, char* res) {
     itoa(ent, res, 10);
-}
+}*/
 void print_string(char* mess) {
     char i = 0;
     while (mess[i] != '\n') {
@@ -71,23 +71,26 @@ void print_string(char* mess) {
 }*/
 
 void setup() {
-    DDRB &= ~_BV(1);
-    DDRB &= ~_BV(2);
+    //DDRB &= ~_BV(1); //old
+    //DDRB &= ~_BV(2); //old
+    DDRB = (1<<6);     //MISO as OUTPUT
+    SPCR = (1<<SPE);   //Enable SPI
 }
 
 char digitalRead() {
-    return PORTB & 3;
+    return SPDR;
 }
 
 int main() {
     USART_Init(UBRR);
     setup();
     char mess[4];
-
     while (1) {
         value = digitalRead();
         USART_Transmit(value);
         //intToChar(value, mess);
-        //print_string("coucou\n");
+        itoa(value,mess,10);
+        strcat(mess,"\n");
+        print_string(mess);
     }
 }
