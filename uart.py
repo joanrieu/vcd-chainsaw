@@ -1,5 +1,3 @@
-import re
-
 class UartDecoder:
     
     def __init__(self):
