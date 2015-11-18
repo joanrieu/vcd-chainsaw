@@ -1,0 +1,86 @@
+$timescale 1ns $end
+$var wire 1 A Digital0 $end
+$var wire 1 B Digital1 $end
+$var wire 1 C Digital2 $end
+$var wire 1 D Digital3 $end
+$var wire 1 E Digital4 $end
+$var wire 1 F Digital5 $end
+$var wire 1 G Digital6 $end
+$var wire 1 H Digital7 $end
+#227
+0A
+0B
+0C
+0D
+0E
+0F
+0G
+0H
+#1370837
+1D
+#1644960
+0D
+#2541738
+1D
+#3626464
+0D
+#4363581
+1D
+#4482430
+0D
+#5317491
+1D
+#6099308
+0D
+#6787421
+1D
+#6856860
+0D
+#7037000
+1D
+#7102543
+0D
+#7519979
+1D
+#7589676
+0D
+#7655268
+1D
+#7741251
+0D
+#8023804
+1D
+#8130262
+0D
+#8601006
+1D
+#8662927
+0D
+#8736171
+1D
+#8813891
+0D
+#8830111
+1D
+#8924605
+0D
+#9039142
+1D
+#9120853
+0D
+#9374628
+1D
+#9464875
+0D
+#9718662
+1D
+#9796622
+0D
+#9878566
+1D
+#9964439
+0D
+#10210018
+1D
+#10295961
+0D
