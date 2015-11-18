@@ -17,7 +17,7 @@ startTime = time.time()
 allWires = -1
 
 while True:
-    
+
     # Read the value of all ports as one integer from the serial port
     allWiresOld = allWires
     allWires = ser.readline().strip()

@@ -41,8 +41,8 @@ unsigned char USART_Receive( void ) {
 int charToInt(char* text) {
     return atoi(text);
 }
-char* intToChar(int ent, char* res) {
-    return (char* )itoa(ent, res, 10);
+void intToChar(int ent, char* res) {
+    itoa(ent, res, 10);
 }
 void print_string(char* mess) {
     char i = 0;
@@ -82,12 +82,12 @@ char digitalRead() {
 int main() {
     USART_Init(UBRR);
     setup();
-    char mess[9];
+    char mess[4];
 
     while (1) {
         value = digitalRead();
         USART_Transmit(value);
         //intToChar(value, mess);
-        //print_string(mess);
+        //print_string("coucou\n");
     }
 }
