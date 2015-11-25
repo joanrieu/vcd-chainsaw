@@ -1,6 +1,6 @@
-class UartDecoder:
+class SerialDecoder:
     
-    def __init__(self):
+    def __init__(self, two_stop_bits=False):
         self.state = 0
         self.states = [
             self.readStart,
@@ -12,9 +12,10 @@ class UartDecoder:
             self.readData,
             self.readData,
             self.readData,
-            self.readStop,
-            self.readStop2
+            self.readStop
         ]
+        if two_stop_bits:
+            self.states.append(self.readStop2)
     
     def read(self, bit):
         self.states[self.state](self)
@@ -22,10 +23,10 @@ class UartDecoder:
     
     def readStart(self, bit):
         assert bit == 0
-        value = 0
+        self.value = 0
     
     def readData(self, bit):
-        value = value << 1 | bit & 1
+        self.value = self.value << 1 | bit & 1
     
     def readStop(self, bit):
         assert bit == 1
