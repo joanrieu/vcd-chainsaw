@@ -53,4 +53,8 @@ class Ps2VcdReader(VcdReader):
         self.decoder.read(data)
 
 if __name__ == '__main__':
-    Ps2VcdReader(open('ps2.vcd'), 'A', 'B').run()
+    if len(sys.argv) > 1:
+        file = open(sys.argv[1])
+    else:
+        file = sys.stdin
+    Ps2VcdReader(file, 'A', 'B').run()
