@@ -1,27 +1,36 @@
 class SerialDecoder:
     
-    def __init__(self, parityBit=False, evenParity=True, twoStopBits=False, lsbFirst=False):
+    MSB_TO_LSB = 1
+    LSB_TO_MSB = 2
+    
+    PARITY_EVEN = 1
+    PARITY_ODD = 2
+    
+    def __init__(self, dataBits, bitOrder, parityBit, stopBits):
+        # Start
         self.state = 0
-        self.states = [
-            self.readStart,
-            self.readData,
-            self.readData,
-            self.readData,
-            self.readData,
-            self.readData,
-            self.readData,
-            self.readData,
-            self.readData
-        ]
-        if parityBit:
-            if evenParity:
-                self.states.append(self.readParityEven)
+        self.states = [self.readStart]
+        # Data
+        for i in range(dataBits):
+            if bitOrder is self.MSB_TO_LSB:
+                self.states.append(self.readBitMsbToLsb)
+            elif bitOrder is self.LSB_TO_MSB:
+                self.states.append(self.readBitLsbToMsb)
             else:
-                self.states.append(self.readParityOdd)
-        self.lsbFirst = lsbFirst
-        self.states.append(self.readStop)
-        if twoStopBits:
-            self.states.append(self.readStop2)
+                raise ValueError
+        # Parity
+        if parityBit is self.PARITY_EVEN:
+            self.states.append(self.readParityEven)
+        elif parityBit is self.PARITY_ODD:
+            self.states.append(self.readParityOdd)
+        elif parityBit is not None:
+            raise ValueError
+        # Stop
+        for i in range(stopBits):
+            if i == 0:
+                self.states.append(self.readStop)
+            else:
+                self.states.append(self.readStop2)
     
     def read(self, bit):
         self.states[self.state](bit)
@@ -31,11 +40,11 @@ class SerialDecoder:
         assert bit == 0
         self.bits = []
     
-    def readData(self, bit):
-        if self.lsbFirst:
-            self.bits.insert(0, bit)
-        else:
-            self.bits.append(bit)
+    def readBitLsbToMsb(self, bit):
+        self.bits.insert(0, bit)
+    
+    def readBitMsbToLsb(self, bit):
+        self.bits.append(bit)
     
     def readParityEven(self, bit):
         assert sum(self.bits) % 2 == bit

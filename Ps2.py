@@ -11,7 +11,7 @@ class Ps2SerialDecoder(SerialDecoder):
     bytes = []
     
     def __init__(self):
-        SerialDecoder.__init__(self, parityBit=True, evenParity=False, lsbFirst=True)
+        SerialDecoder.__init__(self, 8, SerialDecoder.LSB_TO_MSB, SerialDecoder.PARITY_ODD, 1)
     
     def onByte(self, byte):
         self.bytes.append(byte)
