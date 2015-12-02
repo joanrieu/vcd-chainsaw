@@ -1,6 +1,6 @@
 class SerialDecoder:
     
-    def __init__(self, parityBit=False, twoStopBits=False, lsbFirst=False):
+    def __init__(self, parityBit=False, evenParity=True, twoStopBits=False, lsbFirst=False):
         self.state = 0
         self.states = [
             self.readStart,
@@ -14,7 +14,10 @@ class SerialDecoder:
             self.readData
         ]
         if parityBit:
-            self.states.append(self.readParity)
+            if evenParity:
+                self.states.append(self.readParityEven)
+            else:
+                self.states.append(self.readParityOdd)
         self.lsbFirst = lsbFirst
         self.states.append(self.readStop)
         if twoStopBits:
@@ -34,8 +37,11 @@ class SerialDecoder:
         else:
             self.bits.append(bit)
     
-    def readParity(self, bit):
-        pass #assert bit == ?
+    def readParityEven(self, bit):
+        assert sum(self.bits) % 2 == bit
+    
+    def readParityOdd(self, bit):
+        assert sum(self.bits) % 2 != bit
     
     def readStop(self, bit):
         assert bit == 1

@@ -11,7 +11,7 @@ class Ps2SerialDecoder(SerialDecoder):
     bytes = []
     
     def __init__(self):
-        SerialDecoder.__init__(self, parityBit=True, lsbFirst=True)
+        SerialDecoder.__init__(self, parityBit=True, evenParity=False, lsbFirst=True)
     
     def onByte(self, byte):
         self.bytes.append(byte)
@@ -25,7 +25,6 @@ class Ps2SerialDecoder(SerialDecoder):
             sys.stdout.write(key + ' released\n')
         else:
             processed = False
-            sys.stdout.write('unknown scan code: %s\n' % code)
         if processed:
             self.bytes = []
 
