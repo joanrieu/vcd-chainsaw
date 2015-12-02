@@ -1,14 +1,16 @@
 #include <avr/io.h>
+#include <string.h>
 
 char value=0;
 
 #define FOSC 16000000 // material
-#define UBRR 0// 0=> BAUD=2M 1=> BAUD=1M
+#define BAUD 1000000
+#define UBRR (FOSC/(16*BAUD))-1
 
 void USART_Init(unsigned int ubrr) {
 
-    UCSR0A &= ~(_BV(FE0) | _BV(DOR0) | _BV(UPE0));
-    UCSR0A |= (_BV(UDRE0) | _BV(U2X0));
+    UCSR0A &= ~(_BV(FE0) | _BV(DOR0) | _BV(UPE0) | _BV(U2X0));
+    UCSR0A |= _BV(UDRE0);
 
     //set Baudrate
     UBRR0H = (unsigned char)(ubrr>>8);
@@ -31,19 +33,6 @@ void USART_Transmit( unsigned char data ) {
     UDR0 = data;
 }
 
-/*unsigned char USART_Receive( void ) {
-    //Wait for data to be received
-    while ( !(UCSR0A & (1<<RXC0)) );
-
-    //Get and return received data from buffer
-    return UDR0;
-}*/
-/*int charToInt(char* text) {
-    return atoi(text);
-}
-void intToChar(int ent, char* res) {
-    itoa(ent, res, 10);
-}*/
 void print_string(char* mess) {
     char i = 0;
     while (mess[i] != '\n') {
@@ -53,32 +42,15 @@ void print_string(char* mess) {
     USART_Transmit(mess[i]);
 }
 
-/*char* listen(char* text) {
-
-  char i = 0;
-  char com = 0;
-  do {
-    com =  USART_Receive();
-    USART_Transmit(com);
-    text[i] = com;
-    i++;
-  } while (com != '\r');
-  USART_Transmit('\n');
-  text[i++] = '\n';
-
-  return text;
-
-}*/
-
 void setup() {
-    //DDRB &= ~_BV(1); //old
-    //DDRB &= ~_BV(2); //old
-    DDRB = (1<<6);     //MISO as OUTPUT
-    SPCR = (1<<SPE);   //Enable SPI
+    //DDRB |= _BV(PB1);
+    //DDRB &= ~_BV(PB2);
+    PORTB = (1<<PB7)|(1<<PB6)|(1<<PB1)|(1<<PB0);
+    DDRB = (1<<DDB3)|(1<<DDB2)|(1<<DDB1)|(1<<DDB0);
 }
 
 char digitalRead() {
-    return SPDR;
+    return PINB & 12;
 }
 
 int main() {
@@ -87,10 +59,8 @@ int main() {
     char mess[4];
     while (1) {
         value = digitalRead();
-        USART_Transmit(value);
-        //intToChar(value, mess);
         itoa(value,mess,10);
-        strcat(mess,"\n");
+        strcat(mess,"\n");//pour tester avec cu rajouter un \r
         print_string(mess);
     }
 }
