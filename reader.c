@@ -1,16 +1,18 @@
 #include <avr/io.h>
 #include <string.h>
+#include <avr/interrupt.h>
 
-char value=0;
+volatile char value=-1;
+volatile char boolean = 0;
 
 #define FOSC 16000000 // material
-#define BAUD 1000000
-#define UBRR (FOSC/(16*BAUD))-1
+#define BAUD 115200
+#define UBRR (FOSC/(8*BAUD))-1
 
 void USART_Init(unsigned int ubrr) {
 
-    UCSR0A &= ~(_BV(FE0) | _BV(DOR0) | _BV(UPE0) | _BV(U2X0));
-    UCSR0A |= _BV(UDRE0);
+    UCSR0A &= ~(_BV(FE0) | _BV(DOR0) | _BV(UPE0));
+    UCSR0A |= (_BV(UDRE0) | _BV(U2X0));
 
     //set Baudrate
     UBRR0H = (unsigned char)(ubrr>>8);
@@ -45,12 +47,29 @@ void print_string(char* mess) {
 void setup() {
     //DDRB |= _BV(PB1);
     //DDRB &= ~_BV(PB2);
-    PORTB = (1<<PB7)|(1<<PB6)|(1<<PB1)|(1<<PB0);
-    DDRB = (1<<DDB3)|(1<<DDB2)|(1<<DDB1)|(1<<DDB0);
+    //PORTB = (1<<PB7)|(1<<PB6)|(1<<PB1)|(1<<PB0);
+    //DDRB = (1<<DDB3)|(1<<DDB2)|(1<<DDB1)|(1<<DDB0);
+
+    DDRB = 1<<PB5;
+    PORTB = 0;
+
+    EICRA = 1;
+    EIMSK = 1<<INT0;
+    PCICR = 1<<PCIE0;
+    PCMSK0 |= (1<<PCINT2)|(1<<PCINT3);
+
+    sei();
 }
 
 char digitalRead() {
-    return PINB & 12;
+    return (PINB & 12)>>2;
+}
+
+ISR(PCINT0_vect)
+{
+    PORTB ^= _BV(PB5);
+    value = digitalRead();
+    boolean = 1;
 }
 
 int main() {
@@ -58,9 +77,11 @@ int main() {
     setup();
     char mess[4];
     while (1) {
-        value = digitalRead();
-        itoa(value,mess,10);
-        strcat(mess,"\n");//pour tester avec cu rajouter un \r
-        print_string(mess);
+        if(boolean){
+            itoa(value,mess,10);
+            strcat(mess,"\r\n");//pour tester avec cu rajouter un \r
+            print_string(mess);
+            boolean = 0;
+        }
     }
 }

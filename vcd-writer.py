@@ -2,8 +2,8 @@
 import serial
 import time
 
-ser = serial.Serial('/dev/ttyACM0', 2000000)
-wires = [-1 for i in range(8)]
+ser = serial.Serial('/dev/ttyACM1', 115200)
+wires = [-1 for i in range(2)]
 file = open("data.vcd", "w")
 
 def wireName(wireId):
@@ -30,6 +30,7 @@ while True:
         if allWires == allWiresOld:
             continue
     except ValueError:
+	allWires = -1
         continue
     
     # Write the header for the new values
