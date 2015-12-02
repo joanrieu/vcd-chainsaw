@@ -1,5 +1,3 @@
-import sys
-
 class SerialDecoder:
     
     def __init__(self, parityBit=False, twoStopBits=False, lsbFirst=False):
@@ -23,7 +21,6 @@ class SerialDecoder:
             self.states.append(self.readStop2)
     
     def read(self, bit):
-        sys.stderr.write('bit = %d\n' % bit)
         self.states[self.state](bit)
         self.state = (self.state + 1) % len(self.states)
     
@@ -42,11 +39,11 @@ class SerialDecoder:
     
     def readStop(self, bit):
         assert bit == 1
-        value = int(''.join([str(bit) for bit in self.bits]), 2)
-        self.onValue(value)
+        byte = int(''.join([str(bit) for bit in self.bits]), 2)
+        self.onByte(byte)
     
     def readStop2(self, bit):
         assert bit == 1
     
-    def onValue(self, value):
+    def onByte(self, byte):
         pass

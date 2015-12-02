@@ -5,7 +5,10 @@ import sys
 class VcdReader:
     
     def __init__(self, file):
-        for line in file:
+        self.file = file
+    
+    def run(self):
+        for line in self.file:
             line = line.strip()
             if len(line) > 0:
                 if not self.tryReadLine(line):
