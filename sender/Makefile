@@ -1,5 +1,5 @@
-FILES=./reader.c
-PROGRAM=./reader.out
+FILES=./sender.c
+PROGRAM=./sender.out
 BINARY=$(PROGRAM).bin
 U=flash:w:$(BINARY)
 
