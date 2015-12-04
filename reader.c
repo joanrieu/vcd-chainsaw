@@ -2,12 +2,12 @@
 #include <string.h>
 #include <avr/interrupt.h>
 
-volatile char value=-1;
-volatile char boolean = 0;
+/// Serial communication baud rate.
+#define BAUD 1000000
 
-#define FOSC 16000000 // material
-#define BAUD 115200
-#define UBRR (FOSC/(8*BAUD))-1
+/********** BEGIN CODE FROM DOCUMENTATION *************************************/
+
+#define FOSC 16000000 ///< Board clock speed (Hz)
 
 void USART_Init(unsigned int ubrr) {
 
@@ -35,53 +35,58 @@ void USART_Transmit( unsigned char data ) {
     UDR0 = data;
 }
 
-void print_string(char* mess) {
-    char i = 0;
-    while (mess[i] != '\n') {
-        USART_Transmit(mess[i]);
-        i++;
-    }
-    USART_Transmit(mess[i]);
-}
+/********** END CODE FROM DOCUMENTATION ***************************************/
+
+// True when a value change has been detected and new pin values are available.
+volatile char changeDetected = 0;
+
+// Last known value of the pins.
+volatile char value;
 
 void setup() {
-    //DDRB |= _BV(PB1);
-    //DDRB &= ~_BV(PB2);
-    //PORTB = (1<<PB7)|(1<<PB6)|(1<<PB1)|(1<<PB0);
-    //DDRB = (1<<DDB3)|(1<<DDB2)|(1<<DDB1)|(1<<DDB0);
-
-    DDRB = 1<<PB5;
+    // Setup the serial communication.
+    USART_Init(FOSC / (8 * BAUD) - 1);
+    
+    // Do not touch the pins.
     PORTB = 0;
-
+    
+    // Enable output only on the LED.
+    DDRB = 1 << PB5;
+    
+    // Setup pin change (PC) interrupt (INT) 0.
     EICRA = 1;
-    EIMSK = 1<<INT0;
-    PCICR = 1<<PCIE0;
-    PCMSK0 |= (1<<PCINT2)|(1<<PCINT3);
+    EIMSK = 1 << INT0;
+    PCICR = 1 << PCIE0;
+    PCMSK0 |= (1 << PCINT2) | (1 << PCINT3);
 
+    // Enable interrupts.
     sei();
 }
 
-char digitalRead() {
-    return (PINB & 12)>>2;
-}
-
+/// Handles the pin change (PC) interrupt (INT) 0.
 ISR(PCINT0_vect)
 {
+    // Blink the LED.
     PORTB ^= _BV(PB5);
-    value = digitalRead();
-    boolean = 1;
+    
+    /// Read pins 3 and 4.
+    value = (PINB & 12) >> 2;
+    
+    // Make the main program send the message.
+    changeDetected = 1;
 }
 
-int main() {
-    USART_Init(UBRR);
-    setup();
-    char mess[4];
-    while (1) {
-        if(boolean){
-            itoa(value,mess,10);
-            strcat(mess,"\r\n");//pour tester avec cu rajouter un \r
-            print_string(mess);
-            boolean = 0;
-        }
+// Sends the pin changes to the computer (called in a loop).
+void loop() {
+    if (changeDetected) {
+        changeDetected = 0;
+        USART_Transmit(value);
     }
+}
+
+// Arduino-style main program.
+int main() {
+    setup();
+    while (1)
+        loop();
 }

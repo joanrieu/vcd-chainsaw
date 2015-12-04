@@ -78,4 +78,4 @@ if __name__ == '__main__':
         file = open(sys.argv[1])
     else:
         file = sys.stdin
-    Ps2VcdReader(file, 'C', 'D').run()
+    Ps2VcdReader(file, 'A', 'B').run()

@@ -6,7 +6,7 @@ import time
 ser = serial.Serial('/dev/ttyACM0', 1000000)
 
 # Initialize wires and wire count
-wires = [-1 for i in range(8)]
+wires = [-1 for i in range(2)]
 
 # Open output file (if given)
 if sys.argv > 1:
