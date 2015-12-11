@@ -18,9 +18,9 @@ class VcdReader:
         """Starts reading the file line by line."""
         for line in self.file:
             line = line.strip()
-            if len(line) > 0:
-                if not self.tryReadLine(line):
-                    sys.stderr.write("skipping: `%s'\n" % line);
+            #if len(line) > 0:
+            #    if not self.tryReadLine(line):
+            #        sys.stderr.write("skipping: `%s'\n" % line);
     
     def tryReadLine(self, line):
         """Tries to interpret one VCD line."""
