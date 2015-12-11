@@ -19,7 +19,7 @@ def wireName(wireId):
     return chr(ord("A") + wireId)
 
 # Write the chosen time unit
-file.write("$timescale 1ns $end\n")
+file.write("$timescale 1us $end\n")
 
 # Write the VCD name and description of each wire
 for wireId in range(len(wires)):
@@ -43,7 +43,7 @@ while True:
     
     # Write the header for the new values
     # TODO Replace this approximate value with a more precise one
-    delta = 1000000 * (time.time() - startTime)
+    delta = 1e6 * (time.time() - startTime)
     file.write("#%d\n" % (delta))
     
     # Write the value of each wire

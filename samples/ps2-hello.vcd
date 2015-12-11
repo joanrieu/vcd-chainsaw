@@ -1,4 +1,4 @@
-$timescale 1ns $end
+$timescale 1us $end
 $var wire 1 A Digital0 $end
 $var wire 1 B Digital1 $end
 #4446153
