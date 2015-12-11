@@ -2,6 +2,8 @@ from pprint import pprint
 import re
 import sys
 
+verbose = False
+
 class VcdReader:
     """
     Reads a VCD file line by line and calls self.onTime and self.onWireValue
@@ -18,9 +20,10 @@ class VcdReader:
         """Starts reading the file line by line."""
         for line in self.file:
             line = line.strip()
-            #if len(line) > 0:
-            #    if not self.tryReadLine(line):
-            #        sys.stderr.write("skipping: `%s'\n" % line);
+            if len(line) > 0:
+                if not self.tryReadLine(line):
+                    if verbose:
+                        sys.stderr.write("skipping: `%s'\n" % line);
     
     def tryReadLine(self, line):
         """Tries to interpret one VCD line."""
