@@ -9,7 +9,7 @@ ser = serial.Serial('/dev/ttyACM0', 1000000)
 wires = [-1 for i in range(2)]
 
 # Open output file (if given)
-if sys.argv > 1:
+if len(sys.argv) > 1:
     file = open(sys.argv[1], "w")
 else:
     file = sys.stdout
