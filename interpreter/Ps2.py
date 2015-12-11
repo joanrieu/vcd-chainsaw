@@ -3,6 +3,8 @@ import sys
 from VcdReader import VcdReader
 from SerialDecoder import SerialDecoder
 
+verbose = False
+
 class Ps2SerialDecoder(SerialDecoder):
     """
     Converts a PS2 scan code sequence into the corresponding key press and
@@ -32,10 +34,14 @@ class Ps2SerialDecoder(SerialDecoder):
         processed = True
         if code in self.KEY_MAKE:
             key = self.KEY_MAKE[code]
-            sys.stdout.write(key + ' pressed\n')
+            if verbose:
+                sys.stdout.write(key + ' pressed\n')
+            else:
+                sys.stdout.write(key + '\n')
         elif code in self.KEY_BREAK:
             key = self.KEY_BREAK[code]
-            sys.stdout.write(key + ' released\n')
+            if verbose:
+                sys.stdout.write(key + ' released\n')
         else:
             processed = False
         if processed:
