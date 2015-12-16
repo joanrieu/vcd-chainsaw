@@ -3,7 +3,7 @@ import sys
 import time
 
 # Open serial port
-ser = serial.Serial('/dev/ttyACM0', 1000000)
+ser = serial.Serial('/dev/ttyACM0', 2000000)
 
 # Initialize wires and wire count
 wires = [-1 for i in range(2)]

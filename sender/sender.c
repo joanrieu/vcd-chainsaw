@@ -3,7 +3,7 @@
 #include <avr/interrupt.h>
 
 /// Serial communication baud rate.
-#define BAUD 1000000
+#define BAUD 2000000
 
 /********** BEGIN CODE FROM DOCUMENTATION *************************************/
 
